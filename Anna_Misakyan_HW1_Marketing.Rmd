@@ -1,0 +1,93 @@
+---
+title: "Marketing_Analytics_HW1"
+author: "Anna Misakyan"
+date: '2023-09-29'
+output: pdf_document
+---
+
+Anna Misakyan Homework 1, Marketing Analytics
+
+With the advancement of technology, and gadgets such as headphones, earphones, and later, earbuds, listening to music anywhere we like has become an integrate part of our lives. Over time, various companies have tried to make it more and more comfortable, concentrating their efforts mainly on making the device more compact, and on the advancement of the quality of the sound. Since recently, however, one problem had been unsolved - stabilizing them in the ears, which became a major problem especially after the release of the wireless earbuds. For many people, the issue came to light in the context of losing them. However, there is a group of people, who were at a greater risk of experiencing the issue. It is those who engage in sports.
+
+Previously, several solutions have been given to this problem, such as earbuds with hooks, or wings that are sold as a supplement to the earbuds. Even though the problem was alleviated, it was not fixed. Luckily, in 2022, Earshots Wireless Headphones have been released, that offer a new approach to the problem. Both the speaker and the hook have magnets inside them. As the hook goes around the ear, while the speaker stays in front of it, the two attract each other thanks to the magnets, resulting in the earbud being securely fixed. All the mentioned variations of earbuds are addressing the same issue. However, Earshots Wireless Headphones came up with an innovation, introducing the magnets and targeting specifically those who practice sports.
+
+Knowing that the idea of creating stably positioned earbuds, mainly targeting those engaged in sports has been around for a while, I decided to choose those, usually referred to as "sports earphones" as the product that is similar to the innovation that I have chosen - Earshots Wireless Headphones. Thus, I decided to work with the data of the number of people using sports earphones of the years 2013 - 2018 in the Great Britain. The data was collected by surveying approximately 24000 individuals above the age of 14. The dataset also contains information on the number of people using other types of earphones, however, I will use only the part of it that refers to the "sports" earbuds users, for the sake of relevance to the Earshots Wireless Headphones.
+
+Estimating the Bass Model parameters for the look-alike innovation.
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(knitr)
+library(diffusion)
+library(readxl)
+```
+
+```{r}
+sports_earphones <- read.csv("headphones.csv")
+```
+
+```{r}
+head(sports_earphones)
+```
+
+```{r}
+sports <- sports_earphones$Sports
+```
+
+```{r}
+head(sports)
+```
+
+
+
+
+
+ p = 0.02934
+ q = 0.1172
+
+```{r}
+bass.f <- function(t,p,q){
+((p+q)**2/p)*exp(-(p+q)*t)/
+(1+(q/p)*exp(-(p+q)*t))**2
+}
+
+bass.F <- function(t,p,q){
+(1-exp(-(p+q)*t))/
+(1+(q/p)*exp(-(p+q)*t))
+}
+
+```
+
+```{r}
+
+ggplot(data.frame(t = c(1:17)), aes(t)) +
+stat_function(fun = bass.f, args = c(p=0.02934, q=0.1172)) +
+labs(title = 'f(t)')
+
+```
+
+```{r}
+
+ggplot(data = sports_earphones, aes(x = ï..year, y = Sports)) +
+geom_bar(stat = 'identity')
+```
+
+```{r}
+diff_m = diffusion(sports)
+p=round(diff_m$w,4)[1]
+q=round(diff_m$w,4)[2]
+m=round(diff_m$w,4)[3]
+diff_m
+```
+
+Considering the data of the previous sports earphones in Great Britain, we can see that in the period of 6 years, approximately 35% of the surveyed people had purchased sports earphones. The survey was given to people of age 15 and above, however, we can assume that people younger that age will be unlikely to purchase Earshots Wireless Headphones. Considering that the population of Great Britain is approximately 67 million, and that around 17% of the population is below age 15, according to the gov.uk, we can assume that in the period of 6 years, there will be around 19,463,500 people to purchase Earshots Wireless Headphones. According to the past data, around 13% of them, which is, around 2,563,233 people will be innovators, who will be willing to buy the product within the first year after the release, basing their opinion on the advertisement, rather than the reviews of other users, while the rest of the buyers will do it later.
+
+Souces:
+https://www.statista.com/statistics/308327/headphones-earphones-usage-by-feature-in-the-uk/
+
+https://time.com/collection/best-inventions-2022/6228897/earshots-wireless-headphones/
+
+https://earshots.com/
+
+https://www.gov.uk/
